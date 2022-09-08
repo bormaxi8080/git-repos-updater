@@ -34,7 +34,7 @@ It is recommended to apply this script only to collections of local repositories
 
 1. Clone this repository
 2. Change repository="/Volumes/Transcend/repos" to the folder with repositories you need in repos-update.sh
-3. Run bash repost-update.sh
+3. Run 'bash repos-update.sh'
 4. Bingo!
 
 ![alt text](./terminal.png "Terminal")
