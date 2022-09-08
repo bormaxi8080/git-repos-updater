@@ -2,13 +2,13 @@
 
 Shell script for update all GitHub repositories placed in specified folder
 
-![alt text](./repos.png "Repos List in Finder")
-
 ### Purposes:
 
 This script helps to automatically update all repositories located in a specific folder from remote repositories.
 
 This is typically needed in a situation where you have many repositories cloned locally into a folder, such as a collection of various utilities, and you want to update all repositories to the latest version from a remote repository.
+
+![alt text](./repos.png "Repos List in Finder")
 
 This script does three simple things on each repository in the source folder:
 
