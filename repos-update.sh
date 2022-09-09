@@ -8,6 +8,9 @@ echo "This is script for reset --hard HEAD update all GitHub local repositories 
 echo "Destination folder: $repository"
 echo ""
 
+# cd "$repository";
+
+# repositories counter
 count=0;
 
 for repo in $(find $repository -depth 1 -type d)
