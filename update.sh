@@ -4,7 +4,7 @@
 # destination repositories folder
 repository="/Volumes/Transcend/repos"
 
-echo "This is script for reset --hard HEAD update all GitHub local repositories placed in specified folder"
+echo "This is script for reset --hard HEAD update all git local repositories placed in specified folder"
 echo "Destination folder: $repository"
 echo ""
 
