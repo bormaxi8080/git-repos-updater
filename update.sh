@@ -2,13 +2,12 @@
 # https://github.com/bormaxi8080/git-repos-updater.git
 
 # destination repositories folder
-repository="/Volumes/Transcend/repos"
+# repository="/Volumes/Transcend/repos"
+repository=$1
 
 echo "This is script for reset --hard HEAD update all git local repositories placed in specified folder"
 echo "Destination folder: $repository"
 echo ""
-
-# cd "$repository";
 
 # repositories counter
 count=0;

@@ -32,9 +32,11 @@ It is recommended to apply this script only to collections of local repositories
 
 ### Usage:
 
-1. Clone this repository
-2. Change repository="/Volumes/Transcend/repos" to the folder with repositories you need in repos-update.sh
-3. Run 'bash update.sh' and wait.
-4. Bingo!
+- Clone this repository
+- Run 'bash update.sh <Path to your repositories folder>', aka this, and wait:
+
+> bash update.sh "/Volumes/Transcend/repos"
+
+- Bingo!
 
 ![alt text](./terminal.png "Terminal")
