@@ -1,5 +1,5 @@
 #!/bin/bash
-# https://github.com/bormaxi8080/github-repos-updater.git
+# https://github.com/bormaxi8080/git-repos-updater.git
 
 # destination repositories folder
 repository="/Volumes/Transcend/repos"
