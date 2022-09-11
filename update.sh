@@ -1,18 +1,26 @@
 #!/bin/bash
 # https://github.com/bormaxi8080/git-repos-updater.git
 
+set -e
+
+if [ ${#@} -lt 1 ]; then
+    echo "usage: $0 [DESTINATION PATH]"
+    exit 1;
+fi
+
 # destination repositories folder
-# repository="/Volumes/Transcend/repos"
-repository=$1
+# DESTINATION_PATH="/Volumes/Transcend/repos"
+DESTINATION_PATH=$1
 
 echo "This is script for reset --hard HEAD update all git local repositories placed in specified folder"
-echo "Destination folder: $repository"
+echo "DESTINATION PATH: $DESTINATION_PATH"
+echo "---------------------------------------------------"
 echo ""
 
 # repositories counter
-count=0;
+COUNTER=0;
 
-for repo in $(find $repository -depth 1 -type d)
+for repo in $(find $DESTINATION_PATH -depth 1 -type d)
 do
   echo "Updating repo: $repo..."
   echo ""
@@ -31,8 +39,8 @@ do
   cd ../
 
   # shellcheck disable=SC2219
-  let "count+=1";
+  let "COUNTER+=1";
 done
 
-echo "$count repos updated"
+echo "$COUNTER repos updated"
 echo "Done"
