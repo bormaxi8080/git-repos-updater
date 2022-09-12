@@ -1,7 +1,7 @@
 #!/bin/bash
 # https://github.com/bormaxi8080/git-repos-updater.git
 
-set -e
+#set -e
 
 if [ ${#@} -lt 1 ]; then
     echo "usage: $0 [DESTINATION PATH]"
