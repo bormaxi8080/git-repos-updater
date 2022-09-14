@@ -20,7 +20,7 @@ echo ""
 # repositories counter
 COUNTER=0;
 
-for repo in $(find $DESTINATION_PATH -depth 1 -type d)
+for repo in $(find "$DESTINATION_PATH" -depth 1 -type d)
 do
   echo "Updating repo: $repo..."
   echo ""
