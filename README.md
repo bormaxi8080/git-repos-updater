@@ -40,3 +40,7 @@ It is recommended to apply this script only to collections of local repositories
 - Bingo!
 
 ![alt text](./terminal.png "Terminal")
+
+## Related projects:
+
+Also I use [github-starred-repos-loader](https://github.com/bormaxi8080/github-starred-repos-loader) and [github-starred-repos-builder](https://github.com/bormaxi8080/github-starred-repos-builder) scripts to pull my starred GitHub collected repos locally and generates repos description in Markdown format.
