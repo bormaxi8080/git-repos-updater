@@ -20,11 +20,13 @@ echo ""
 # repositories counter
 COUNTER=0;
 
+# shellcheck disable=SC2044
 for repo in $(find "$DESTINATION_PATH" -depth 1 -type d)
 do
   echo "Updating repo: $repo..."
   echo ""
 
+  # shellcheck disable=SC2164
   cd "$repo";
 
   git fetch --all;
