@@ -8,6 +8,17 @@ if [ ${#@} -lt 1 ]; then
     exit 1;
 fi
 
+# set GitHub options
+# https://stackoverflow.com/questions/21277806/fatal-early-eof-fatal-index-pack-failed
+git config --global core.compression 0
+ulimit -f 2097152
+ulimit -c 2097152
+ulimit -n 2097152
+
+# git config --show-origin core.packedGitLimit
+# git config --unset --global core.packedGitLimit
+# git config --global http.postBuffer 2M
+
 # destination repositories folder
 # DESTINATION_PATH="/Volumes/Transcend/repos"
 DESTINATION_PATH=$1
