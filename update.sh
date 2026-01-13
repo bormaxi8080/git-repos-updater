@@ -1,9 +1,6 @@
 #!/bin/bash
-# https://github.com/bormaxi8080/git-repos-updater.git
+# git-repos-updater (safe + robust)
 
-# Safety / behavior:
-# - Exit on errors in general, but keep going per-repo (we catch failures).
-# - Robust handling of spaces/newlines in paths (NUL-delimited find).
 set -Eeuo pipefail
 
 if [ "$#" -lt 1 ]; then
@@ -18,36 +15,32 @@ if [ ! -d "$DESTINATION_PATH" ]; then
   exit 1
 fi
 
-echo "This is script for reset --hard HEAD update all git local repositories placed in specified folder"
+# Optional: set AUTO_SAFE_DIRECTORY=1 to auto-add safe.directory for repos that trigger dubious ownership
+AUTO_SAFE_DIRECTORY="${AUTO_SAFE_DIRECTORY:-0}"
+
+echo "This script resets local changes (reset --hard HEAD) and updates git repositories in a folder (git fetch --all + git pull)."
 echo "DESTINATION PATH: $DESTINATION_PATH"
+echo "AUTO_SAFE_DIRECTORY: $AUTO_SAFE_DIRECTORY"
 echo "---------------------------------------------------"
 echo ""
 
-# GitHub / Git transport options (as in original script)
-# https://stackoverflow.com/questions/21277806/fatal-early-eof-fatal-index-pack-failed
+# Git transport tweaks (kept from your original)
 git config --global core.compression 0 || true
 ulimit -f 2097152 || true
 ulimit -c 2097152 || true
 ulimit -n 2097152 || true
 git config --global http.postBuffer 524288000 || true
 
-# Handling Git "dubious ownership" safely:
-#  - By default: DO NOT auto-add safe.directory (security).
-#  - Enable by setting: AUTO_SAFE_DIRECTORY=1
-AUTO_SAFE_DIRECTORY="${AUTO_SAFE_DIRECTORY:-0}"
-
 COUNTER=0
 UPDATED=0
 SKIPPED=0
 FAILED=0
-SAFE_ADDED=0
 
-# Iterate only first-level directories, safely (handles spaces).
-# -mindepth 1: excludes DESTINATION_PATH itself
-# -maxdepth 1: only immediate children
+# Only immediate child directories; NUL-delimited to survive spaces/newlines in names
 while IFS= read -r -d '' repo; do
-  # Only treat directories containing a .git folder/file as git repos
-  if [ ! -e "$repo/.git" ]; then
+  # Confirm it's a valid git work tree (this prevents false positives even if .git exists but is broken)
+  if ! git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Skipping (not a valid git repo): $repo"
     SKIPPED=$((SKIPPED + 1))
     continue
   fi
@@ -56,19 +49,18 @@ while IFS= read -r -d '' repo; do
   echo "Updating repo: $repo..."
   echo ""
 
-  # Use a subshell so a failed cd or git command doesn't break outer loop
-  (
+  # Run update steps; capture failure but continue loop
+  if ! (
     cd "$repo"
 
-    # First, detect whether Git considers this repo "safe" for current user
-    # If not safe, optionally add to safe.directory (when AUTO_SAFE_DIRECTORY=1)
-    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-      # Capture stderr to detect "dubious ownership"
-      err="$(git rev-parse --is-inside-work-tree 2>&1 >/dev/null || true)"
+    # If Git blocks due to dubious ownership, optionally add safe.directory and retry
+    if ! git status >/dev/null 2>&1; then
+      err="$(git status 2>&1 >/dev/null || true)"
       if echo "$err" | grep -qi "detected dubious ownership"; then
-        echo "ERROR: Git refused to operate due to 'dubious ownership'."
+        echo "ERROR: Git refused due to 'dubious ownership': $repo"
         echo "$err"
         echo ""
+
         if [ "$AUTO_SAFE_DIRECTORY" = "1" ]; then
           echo "AUTO_SAFE_DIRECTORY=1 -> adding to global safe.directory:"
           git config --global --add safe.directory "$repo"
@@ -79,42 +71,24 @@ while IFS= read -r -d '' repo; do
           echo "  1) Preferred: fix ownership/permissions for this folder (chown/chmod)."
           echo "  2) Add exception (per repo):"
           echo "     git config --global --add safe.directory \"$repo\""
-          echo "  3) If you really want auto-add, re-run with:"
+          echo "  3) Or run with auto-add:"
           echo "     AUTO_SAFE_DIRECTORY=1 $0 \"$DESTINATION_PATH\""
           echo ""
           exit 2
         fi
       else
-        # Some other issue (not a git repo, corrupted repo, etc.)
-        echo "ERROR: Not a valid git repository or cannot access: $repo"
+        # Some other error (rare), treat as failure
+        echo "ERROR: Git status failed for repo: $repo"
         echo "$err"
         exit 3
       fi
     fi
 
-    # If we auto-added safe.directory above, we should re-check access
-    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-      echo "ERROR: Still cannot operate in repo after safe.directory handling: $repo"
-      exit 4
-    fi
-
-    # Track whether we added safe.directory (best-effort)
-    if [ "$AUTO_SAFE_DIRECTORY" = "1" ]; then
-      # If this repo appears in global safe.directory now, count it
-      if git config --global --get-all safe.directory 2>/dev/null | grep -Fxq "$repo"; then
-        # Not perfect (might have been added earlier), but good enough
-        :
-      fi
-    fi
-
-    # Git operations (same semantics as your original script)
+    # Update steps (your original semantics)
     git fetch --all
     git reset --hard HEAD
     git pull
-  )
-  status=$?
-
-  if [ $status -eq 0 ]; then
+  ); then
     UPDATED=$((UPDATED + 1))
     echo ""
     echo "$repo updated"
@@ -123,15 +97,16 @@ while IFS= read -r -d '' repo; do
   else
     FAILED=$((FAILED + 1))
     echo ""
-    echo "FAILED to update: $repo (exit code: $status)"
+    echo "FAILED to update: $repo"
     echo "---------------------------------------------------"
     echo ""
-    # Continue with next repo
   fi
+
 done < <(find "$DESTINATION_PATH" -mindepth 1 -maxdepth 1 -type d -print0)
 
-echo "Repos scanned (git repos found): $COUNTER"
-echo "Updated successfully:          $UPDATED"
-echo "Skipped (non-git dirs):        $SKIPPED"
-echo "Failed:                        $FAILED"
+echo "Repos processed (valid git repos): $COUNTER"
+echo "Updated successfully:             $UPDATED"
+echo "Skipped (non-repos):              $SKIPPED"
+echo "Failed:                           $FAILED"
 echo "Done"
+
