@@ -2,7 +2,7 @@
 
 Shell script for update all git repositories placed in specified folder
 
-### Purposes:
+### Purposes
 
 This script helps to automatically update all repositories located in a specific folder from remote repositories.
 
@@ -22,7 +22,7 @@ This script does three simple things on each repository in the source folder:
 
 *It works with GitHub, GitLab, BitBucket or your remote Git Server.
 
-### Important!
+### Important
 
 get reset --hard HEAD removes all changes made so far locally! 
 
@@ -30,7 +30,7 @@ Be careful not to lose your data!
 
 It is recommended to apply this script only to collections of local repositories that are not actively edited.
 
-### Usage:
+### Usage
 
 - Clone this repository
 - Run 'bash update.sh <Path to your repositories folder>', aka this, and wait:
@@ -41,6 +41,11 @@ It is recommended to apply this script only to collections of local repositories
 
 ![alt text](./terminal.png "Terminal")
 
-## Related projects:
+## Related projects
 
 Also I use [github-starred-repos-loader](https://github.com/bormaxi8080/github-starred-repos-loader) and [github-starred-repos-builder](https://github.com/bormaxi8080/github-starred-repos-builder) scripts to pull my starred GitHub collected repos locally and generates repos description in Markdown format.
+
+## Donates
+
+[![Buy Me a Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/bormaxi8080)
+
